@@ -1,0 +1,51 @@
+﻿[
+      {
+		"id": "1",
+        "name": "Post-it Note",
+        "price": "2.25",
+        "recurring": "false",
+        "split": "false"
+      },
+      {
+		"id": "2",
+        "name": "Pencil",
+        "price": "1.21",
+        "recurring": "false",
+        "split": "false"
+      },
+      {
+		"id": "3",
+        "name": "Notebook",
+        "price": "2.00",
+        "recurring": "false",
+        "split": "false"
+      },
+      {
+		"id": "4",
+        "name": "Computer mouse",
+        "price": "13.639",
+        "recurring": "false",
+        "split": "false"
+      },
+      {
+		"id": "5",
+        "name": "Keyboard",
+        "price": "23.54",
+        "recurring": "false",
+        "split": "false"
+      },
+      {
+		"id": "6",
+        "name": "One year Subscription",
+        "price": "588.00",
+        "recurring": "true",
+        "split": "false"
+      },
+      {
+		"id": "7",
+        "name": "Smartphone",
+        "price": "150.03",
+        "recurring": "false",
+        "split": "true"
+      }
+]

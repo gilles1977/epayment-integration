@@ -1,0 +1,111 @@
+﻿@using IntegrationWeb
+@model IntegrationWeb.Models.ProductsViewModel
+
+@{
+    ViewBag.Title = "Checkout";
+}
+<h2>Proceed to Check-out.</h2>
+@Html.Partial("_Cart")
+
+<div class="content-wrapper"><strong>Choosed payment method:</strong>
+    <table>
+        <tr>
+            <th>@Html.DisplayName("Card Holder Name")</th>
+            <th>@Html.DisplayName("Payment Method")</th>
+            <th>@Html.DisplayName("Card Number")</th>
+            <th>@Html.DisplayName("Expiry Date")</th>
+        </tr>
+        <tr>
+            <td>@Html.DisplayFor(m => m.ChosenWallet.CardHolderName)</td>
+            <td>@Html.DisplayFor(m => m.ChosenWallet.Brand)</td>
+            <td>@Html.DisplayFor(m => m.ChosenWallet.HiddenCardNumber)</td>
+            <td>@Html.DisplayFor(m => m.ChosenWallet.ExpiryDate)</td>
+        </tr>
+    </table>
+</div>
+<form method="POST" action="@ConfigurationUtil.StandardOrder" id="form1" name="form1">
+    <!-- general parameters -->
+    <input type="hidden" name="PSPID" value="@ConfigurationUtil.PspId" />
+    <input type="hidden" name="ORDERID" value="@Model.OrderId" />
+    <input type="hidden" name="AMOUNT" value="@Model.Amount" />
+    <input type="hidden" name="CURRENCY" value="@ConfigurationUtil.DefaultCurrency" />
+    <input type="hidden" name="LANGUAGE" value="fr_FR" />
+    <input type="hidden" name="CN" value="@Model.CurrentUser.FullName" />
+    <input type="hidden" name="EMAIL" value="" />
+    <input type="hidden" name="OWNERZIP" value="" />
+    <input type="hidden" name="OWNERADDRESS" value="" />
+    <input type="hidden" name="OWNERCTY" value="" />
+    <input type="hidden" name="OWNERTOWN" value="" />
+    <input type="hidden" name="OWNERTELNO" value="" />
+    <!-- check before the payment: see Security: Check before the payment -->
+    <input type="hidden" name="SHASIGN" value="" />
+    <!-- layout information: see Look and feel of the payment page -->
+    <input type="hidden" name="TITLE" value="Payment" />
+    <input type="hidden" name="BGCOLOR" value="#e2e2e2" />
+    <input type="hidden" name="TXTCOLOR" value="" />
+    <input type="hidden" name="TBLBGCOLOR" value="" />
+    <input type="hidden" name="TBLTXTCOLOR" value="" />
+    <input type="hidden" name="BUTTONBGCOLOR" value="" />
+    <input type="hidden" name="BUTTONTXTCOLOR" value="" />
+    <input type="hidden" name="LOGO" value="" />
+    <input type="hidden" name="FONTTYPE" value="" />
+    <!-- post payment redirection: see Transaction feedback to the customer -->
+    <input type="hidden" name="ACCEPTURL" value="@ConfigurationUtil.AcceptUrl" />
+    <input type="hidden" name="DECLINEURL" value="" />
+    <input type="hidden" name="EXCEPTIONURL" value="" />
+    <input type="hidden" name="CANCELURL" value="" />
+    <input type="hidden" name="PM" value="CreditCard"/>
+    <input type="hidden" name="BRAND" value="@Model.Brand"/>
+    <input type="hidden" name="ALIAS" value="@Model.ChosenWallet.WalletId"/>
+    <input type="hidden" name="ALIASUSAGE" value="To make your life easier, we would like to store your payment data for future orders."/>
+    <input type="hidden" name="TP" value=""/>
+    <input type="hidden" name="SUBSCRIPTION_ID" value="@Model.Subscription.SubscriptionId"/>
+    <input type="hidden" name="SUB_AMOUNT" value="@Model.Subscription.SubscriptionAmount"/>
+    <input type="hidden" name="SUB_COM" value=""/>
+    <input type="hidden" name="SUB_ORDERID" value="@Model.Subscription.SubscriptionOrderId"/>
+    <input type="hidden" name="SUB_PERIOD_UNIT" value="@Model.Subscription.SubscriptionPeriodUnit"/>
+    <input type="hidden" name="SUB_PERIOD_NUMBER" value="@Model.Subscription.SubscriptionPeriodNumber"/>
+    <input type="hidden" name="SUB_PERIOD_MOMENT" value="@Model.Subscription.SubscriptionPeriodMoment"/>
+    <input type="hidden" name="SUB_STARTDATE" value="@Model.Subscription.SubscriptionStartDate"/>
+    <input type="hidden" name="SUB_ENDDATE" value="@Model.Subscription.SubscriptionEndDate"/>
+    <input type="hidden" name="SUB_STATUS" value="@Model.Subscription.SubscriptionStatus"/>
+    <input type="hidden" name="SUB_COMMENT" value="@Model.Subscription.SubscriptionComment"/>
+    <input type="hidden" name="AMOUNT1" value="@Model.PaymentViewModel.Amount1" />
+    <input type="hidden" name="AMOUNT2" value="@Model.PaymentViewModel.Amount2" />
+    <input type="hidden" name="AMOUNT3" value="@Model.PaymentViewModel.Amount3" />
+    <input type="hidden" name="EXECUTIONDATE2" value="@Model.PaymentViewModel.ExecutionDate2" />
+    <input type="hidden" name="EXECUTIONDATE3" value="@Model.PaymentViewModel.ExecutionDate3" />
+    <input type="button" id="submit2" name="SUBMIT2" value="Check-out" />
+    @Html.AntiForgeryToken()
+</form>
+<div id="strToHash"></div>
+<div id="hashedStr"></div>
+@section scripts
+{
+    <section class="scripts">
+        <script type="text/javascript">
+            function SetShaSignature() {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetShaSignature")',
+                    data: $("#form1").serialize()
+                })
+                    .done(
+                        function (data) {
+                            if (data.ok) {
+                                $('input[name="SHASIGN"]').attr("value", data.hash);
+                                //$('#strToHash').text(data.str);
+                                //$('#hashedStr').text(data.hash);
+                                $("#form1").submit();
+                            }
+                        });
+            };
+            $(function () {
+                $("#submit2").click(function () {
+                    $('input[name="SHASIGN"]').attr("value", '');
+                    SetShaSignature();
+                });
+            });
+        </script>
+    </section>
+}

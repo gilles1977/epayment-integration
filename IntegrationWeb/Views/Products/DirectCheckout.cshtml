@@ -1,0 +1,51 @@
+﻿@model IntegrationWeb.Models.ProductsViewModel
+@{
+    ViewBag.Title = "Direct Checkout";
+}
+
+<h2>Check-out my cart</h2>
+@Html.Partial("_Cart")
+
+@using (Html.BeginForm("DirectCheckOut", "Products")) { 
+<fieldset>
+    <legend>Please fill-in your payment details</legend>
+    <ol>
+        <li>
+            @Html.LabelFor(m => m.Brand)
+            @Html.RadioButtonFor(m => m.Brand, "VISA", new { style = "width: auto;", @checked = true }) VISA
+            @Html.RadioButtonFor(m => m.Brand, "Mastercard", new { style = "width: auto;" }) MasterCard
+            @Html.ValidationMessageFor(m => m.Brand)
+        </li>
+        <li>
+            @Html.LabelFor(m => m.CardHolderName)
+            @Html.TextBoxFor(m => m.CardHolderName, new { autocomplete = "off" })
+            @Html.ValidationMessageFor(m => m.CardHolderName)
+        </li>
+        <li>
+            @Html.LabelFor(m => m.CardNumber)
+            @Html.TextBoxFor(m => m.CardNumber, new { autocomplete = "off" })
+            @Html.ValidationMessageFor(m => m.CardNumber)
+        </li>
+        <li>
+            @Html.LabelFor(m => m.ExpiryDate)
+            @Html.TextBoxFor(m => m.ExpiryDate, "{0:MM/yy}", new { placeholder = "mm/yy", autocomplete = "off"})
+            @Html.ValidationMessageFor(m => m.ExpiryDate)
+        </li>
+        <li>
+            @Html.LabelFor(m => m.Cvc)
+            @Html.TextBoxFor(m => m.Cvc, new { autocomplete = "off" })
+            @Html.ValidationMessageFor(m => m.Cvc)
+        </li>
+        <li>
+            @Html.LabelFor(m => m.StoreFinancialData)
+            @Html.CheckBoxFor(m => m.StoreFinancialData)
+        </li>
+    </ol>
+    @if (!ViewData.ModelState.IsValid && @ViewData.ModelState["feedback"] != null)
+    {
+        <div class="field-validation-error">
+            @ViewData.ModelState["feedback"].Errors[0].ErrorMessage</div>
+    }
+    <input type="submit" value="Check-out" />
+</fieldset>
+}

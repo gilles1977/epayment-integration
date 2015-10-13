@@ -1,0 +1,35 @@
+﻿@model IntegrationWeb.Models.ProductsViewModel
+
+@{
+    ViewBag.Title = "Your stored payment methods";
+}
+
+<h2>Check-out my cart</h2>
+@Html.Partial("_Cart")
+
+@using (Html.BeginForm("PreRegisterdCheckout", "Products"))
+{
+    <h3>Chosen Payment Method:</h3>
+    <div>@Html.DisplayFor(m => m.ChosenWallet.Brand)</div>
+    <div>@Html.DisplayFor(m => m.ChosenWallet.CardHolderName)</div>
+    <div>@Html.DisplayFor(m => m.ChosenWallet.HiddenCardNumber)</div>
+    <div>@Html.DisplayFor(m => m.ChosenWallet.ExpiryDate)</div>
+    <div>@Html.LabelFor(m => m.Cvc)</div>
+    <div>@Html.TextBoxFor(m => m.Cvc, new { autocomplete = "off" })</div>
+    <div>@Html.ValidationMessageFor(m => m.Cvc)</div>
+    if (!ViewData.ModelState.IsValid && @ViewData.ModelState["feedback"] != null)
+    {
+        <div class="field-validation-error">
+            @ViewData.ModelState["feedback"].Errors[0].ErrorMessage</div>
+    }
+    @Html.HiddenFor(m => m.Brand, new { @Value = Model.ChosenWallet.Brand})
+    @Html.HiddenFor(m => m.CardHolderName, new { @Value = Model.ChosenWallet.CardHolderName })
+    @Html.HiddenFor(m => m.CardNumber, new { @Value = Model.ChosenWallet.HiddenCardNumber })
+    @Html.HiddenFor(m => m.ExpiryDate, new { @Value = Model.ChosenWallet.ExpiryDate })
+    @Html.HiddenFor(m => m.ChosenWallet.WalletId)
+    @Html.HiddenFor(m => m.ChosenWallet.Brand)
+    @Html.HiddenFor(m => m.ChosenWallet.CardHolderName)
+    @Html.HiddenFor(m => m.ChosenWallet.HiddenCardNumber)
+    @Html.HiddenFor(m => m.ChosenWallet.ExpiryDate)
+    <input type="submit" value="Check-out"/>
+}

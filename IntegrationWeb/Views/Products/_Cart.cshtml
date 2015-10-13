@@ -1,0 +1,97 @@
+﻿@model IntegrationWeb.Models.ProductsViewModel
+
+@{ var list = from p in Model.Cart.Products
+              where !p.Recurring && p.InstallementNumber == 0
+                        group p by p.ProductId
+                        into g
+                              join j in Model.Products on g.Key equals j.ProductId
+                        select
+                            new {Name = j.Name, Quantity = g.Count(), UnitPrice = j.Price.ToString("0.00#"), Price = string.Format("{0:0.00#}", g.Sum(s => s.Price))};
+   var recurring = from p in Model.Cart.Products
+              where p.Recurring
+              group p by p.ProductId
+                  into g
+                  join j in Model.Products on g.Key equals j.ProductId
+                  select
+                      new { Name = j.Name, Quantity = g.Count(), UnitPrice = j.Price.ToString("0.00#"), Price = string.Format("{0:0.00#}", g.Sum(s => s.RecurringFee)) };
+
+   var scheduled = from p in Model.Cart.Products
+                   where p.InstallementNumber > 0
+                   group p by p.ProductId
+                       into g
+                       join j in Model.Products on g.Key equals j.ProductId
+                       select
+                           new { Name = j.Name, Quantity = g.Count(), UnitPrice = j.Price.ToString("0.00#"), Price = string.Format("{0:0.00#}", g.Sum(s => s.Installement)) };
+    var disabled = Model.Cart.Total > 0 ? "" : "disabled";
+    
+}
+<table>
+    <tr>
+        <th>@Html.DisplayName("Product")</th>
+        <th>@Html.DisplayName("Quantity")</th>
+        <th>@Html.DisplayName("Unit Price")</th>
+        <th>@Html.DisplayName("Price")</th>
+    </tr>
+    @foreach (var product in list)
+    {
+        <tr>
+            <td>@Html.DisplayFor(m => product.Name)</td>
+            <td>@Html.DisplayFor(m => product.Quantity)</td>
+            <td style="text-align: right">@Html.DisplayFor(m => product.UnitPrice) €</td>
+            <td style="text-align: right">@Html.DisplayFor(m => product.Price) €</td>
+        </tr>
+    }
+    @if (Model.Cart.HasRecurringSubscription)
+    {
+        <tr><td><strong>Your Subscription(s)</strong></td></tr>
+
+        foreach (var product in recurring)
+        {
+            <tr>
+                <td>@Html.DisplayFor(m => product.Name)</td>
+                <td>@Html.DisplayFor(m => product.Quantity)</td>
+                <td style="text-align: right">@Html.DisplayFor(m => product.UnitPrice) €</td>
+                <td style="text-align: right">@Html.DisplayFor(m => product.Price) €</td>
+            </tr>
+        }
+    }
+    
+    @if (Model.Cart.HasInstallements)
+    {
+        <tr><td><strong>Your Scheduled Payment(s)</strong></td></tr>
+
+        foreach (var product in scheduled)
+        {
+            <tr>
+                <td>@Html.DisplayFor(m => product.Name)</td>
+                <td>@Html.DisplayFor(m => product.Quantity)</td>
+                <td style="text-align: right">@Html.DisplayFor(m => product.UnitPrice) €</td>
+                <td style="text-align: right">@Html.DisplayFor(m => product.Price) €</td>
+            </tr>
+        }
+    }
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-align: right"><strong>Total amount: @Model.Cart.Total €</strong></td>
+    </tr>
+    @if (Model.Cart.HasRecurringSubscription)
+    {
+        <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-align: right"><strong>Total subscriptions: @Model.Cart.TotalSubscriptions €</strong></td>
+    </tr>
+    }
+    @if (Model.Cart.HasInstallements)
+    {
+        <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-align: right"><strong>Total scheduled payments: @Model.Cart.TotalScheduledPayments €</strong></td>
+    </tr>
+    }
+</table>

@@ -1,0 +1,7 @@
+﻿@model IntegrationWeb.Models.ProductsViewModel
+
+<div class="content-wrapper">
+    <div class="float-left">Cart: Items: <span class="itemcount">@Html.DisplayTextFor(m => m.Cart.ItemCount)</span> Total: <span class="totalcart">@Html.DisplayTextFor(m => m.Cart.Total)</span> €</div>
+    <div class="float-right"><strong>@Html.ActionLink("CheckOut", "CheckOut")</strong></div>
+    <div class="float-right"><strong>@Html.ActionLink("Direct CheckOut", "DirectCheckOut")</strong></div>
+</div>

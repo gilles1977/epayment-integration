@@ -1,0 +1,42 @@
+﻿@model IntegrationWeb.Models.ProductsViewModel
+@{
+    ViewBag.Title = "Recurring fee";
+}
+
+<h2>How do you want to pay?</h2>
+@Html.Partial("_Cart")
+@using (Html.BeginForm("RecurringOptin", "Products"))
+{
+    if (Model.Cart.Products.Any(p => p.RecurringPossible))
+    {
+    <h3>Chosen Payment Option:</h3>
+        var i = 0;
+        foreach (var product in Model.Cart.Products.Where(p => p.RecurringPossible))
+        {
+            @Html.HiddenFor(m => Model.Cart.Products[i].CartProductId)
+        <div><strong>@Html.DisplayFor(m => product.Name)</strong></div>
+        <div>@Html.RadioButtonFor(m => Model.Cart.Products[i].Recurring, "False", new { style = "width: 50px;" })Entire Fee (@Html.DisplayFor(p => product.Price) €)</div>
+        <div>@Html.RadioButtonFor(m => Model.Cart.Products[i].Recurring, "True", new { style = "width: 50px;" })Monthly Fee (@Html.DisplayFor(p => product.RecurringFee) €)</div>
+            i++;
+        }
+    }
+    if (Model.Cart.Products.Any(p => p.SplitPaymentPossible))
+    {
+        var i = 0;
+    <h3>Chosen Installement Option:</h3>
+        foreach (var splittedProduct in Model.Cart.Products.Where(p => p.SplitPaymentPossible))
+        {
+            @Html.HiddenFor(m => Model.Cart.Products[i].CartProductId)
+        <div><strong>@Html.DisplayFor(m => splittedProduct.Name)</strong></div>
+        <div>@Html.RadioButtonFor(m => Model.Cart.Products[i].InstallementNumber, "0", new { style = "width: 50px;" })I want to pay the entire amount: (@Html.DisplayFor(p => splittedProduct.Price) €)</div>
+        <div>@Html.RadioButtonFor(m => Model.Cart.Products[i].InstallementNumber, "3", new { style = "width: 50px;" })I want to pay only the first installment now: (@Html.DisplayFor(p => splittedProduct.Installement) €)</div>
+        <ul>
+            <li>@splittedProduct.Installement : Now</li>
+            <li>@splittedProduct.Installement : @DateTime.Now.AddMonths(1).ToString("dd/MM/yyyy")</li>
+            <li>@splittedProduct.Installement : @DateTime.Now.AddMonths(2).ToString("dd/MM/yyyy")</li>
+        </ul>
+            i++;
+        }
+    }
+    <input type="submit" value="Next"/>
+}

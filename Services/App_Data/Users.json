@@ -1,0 +1,26 @@
+﻿[
+      {
+		"id": "1",
+        "name": "Gilles",
+        "password": "FxjCSxCuuAmeP8RJYKtpSat2omc1JFnyA+oQNr7DgsI=",
+		"firstname": "Gilles",
+		"lastname": "Coenraets",
+		"role": "Admin"
+      },
+      {
+		"id": "2",
+        "name": "John",
+        "password": "FxjCSxCuuAmeP8RJYKtpSat2omc1JFnyA+oQNr7DgsI=",
+		"firstname": "John",
+		"lastname": "Doe",
+		"role": "User"
+      },
+      {
+		"id": "3",
+        "name": "Jack",
+        "password": "FxjCSxCuuAmeP8RJYKtpSat2omc1JFnyA+oQNr7DgsI=",
+		"firstname": "Jack",
+		"lastname": "Sparrow",
+		"role": "User"
+      }
+]

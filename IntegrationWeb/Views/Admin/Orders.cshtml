@@ -1,0 +1,116 @@
+﻿@model IntegrationWeb.Models.OrdersViewModel
+@{
+    ViewBag.Title = "Orders";
+}
+<h2>Orders</h2>
+@using (Html.BeginForm("DirectCapture", "Admin", FormMethod.Post, new { id = "UpdateForm"}))
+{
+    <table>
+        <tr>
+            <th>@Html.DisplayName("Client")</th>
+            <th>@Html.DisplayName("Merchant Reference")</th>
+            <th>@Html.DisplayName("Currency")</th>
+            <th>@Html.DisplayName("Total Amount")</th>
+            <th>@Html.DisplayName("Quantity")</th>
+            <th>@Html.DisplayName("Order Status")</th>
+            <th>@Html.DisplayName("Select")</th>
+        </tr>
+        @{ int i = 0; }
+        @foreach (var order in Model.Orders)
+        {
+            <tr>
+                <td>@Html.DisplayFor(m => order.ClientName)</td>
+                <td>@Html.DisplayFor(m => order.OrderId)</td>
+                <td>@Html.DisplayFor(m => order.Currency)</td>
+                <td style="text-align: right">@Html.DisplayFor(m => order.TotalOrderAmount) €</td>
+                <td>@Html.DisplayFor(m => order.Quantity)</td>
+                <td>@Html.DisplayFor(m => order.OrderStatus)</td>
+                <td>@Html.CheckBoxFor(m => m.Orders[i].Selected, order.Disabled ? (object)new { id = order.OrderId, @disabled = "disabled" } : new { id = order.OrderId })</td>
+                @Html.HiddenFor(m => m.Orders[i].OrderId)
+                @Html.HiddenFor(m => m.Orders[i].ClientName)
+                @Html.HiddenFor(m => m.Orders[i].Currency)
+                @Html.HiddenFor(m => m.Orders[i].TotalOrderAmount)
+                @Html.HiddenFor(m => m.Orders[i].Quantity)
+                @Html.HiddenFor(m => m.Orders[i].OrderStatus)
+            </tr>
+            i++;
+        }
+    </table>
+    @Html.HiddenFor(m => m.Async, new { id = "async-field"})
+    if (!ViewData.ModelState.IsValid && @ViewData.ModelState["feedback"] != null)
+    {
+        <div class="field-validation-error">@ViewData.ModelState["feedback"].Errors[0].ErrorMessage</div>
+    }
+    <div>
+        <div>
+            <button id="capture-button">Capture</button>
+            <button id="select-button">Select an action</button>
+        </div>
+        <ul id="update-menu">
+            <li id="update-status">Update Status</li>
+            <li id="async-capture">Async Capture</li>
+        </ul>
+    </div>
+    <div id="capture-feedback"></div>
+}
+@section scripts
+{
+    <section class="scripts">
+        <script type="text/javascript">
+            $(function () {
+                $("#capture-button")
+                    .button()
+                    .click(function () {
+                        $("#UpdateForm").submit();
+                    })
+                    .next()
+                    .button({
+                        text: false,
+                        icons: {
+                            primary: "ui-icon-triangle-1-s"
+                        }
+                    })
+                    .click(function () {
+                        var menu = $(this).parent().next().show().position({
+                            my: "left top",
+                            at: "left bottom",
+                            of: this
+                        });
+                        $(document).one("click", function () {
+                            menu.hide();
+                        });
+                        return false;
+                    })
+                    .parent()
+                    .buttonset()
+                    .next()
+                    .hide()
+                    .menu({
+                        select: function (event, ui) {
+                            if (ui.item.attr("id") == "async-capture") {
+                                var formData = $("#UpdateForm").serialize();
+                                var checked = $('input:checked');
+                                checked.prop("checked", false);
+                                checked.attr("disabled", "disabled");
+                                $.ajax({
+                                    type: "POST",
+                                    url: '@Url.Action("CaptureAsync")',
+                                    data: formData
+                                }).done(
+                        function (data) {
+                            if (data.ok) {
+                                $('#capture-feedback').text("Orders captured successfuly.");
+                            } else {
+                                $('#capture-feedback').text(data.message);
+                            }
+                        });
+                            } else {
+                                location.reload();
+                            }
+                        }
+                    });
+            });
+            $("#update-menu").menu();
+        </script>
+    </section>
+}

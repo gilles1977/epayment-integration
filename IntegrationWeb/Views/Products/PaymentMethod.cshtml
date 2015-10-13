@@ -1,0 +1,41 @@
+﻿@model IntegrationWeb.Models.PaymentMethodViewModel
+
+@{
+    ViewBag.Title = "Payment Method";
+}
+
+<h2>Choose Payment Method</h2>
+
+@using (Html.BeginForm("PaymentMethod", "Products"))
+{
+    @Html.HiddenFor(m => m.ReturnAction)
+    @Html.HiddenFor(m => m.AliasAction)
+    <table>
+        <tr>
+            <th>@Html.DisplayName("Choice")</th>
+            <th>@Html.DisplayName("Card Holder Name")</th>
+            <th>@Html.DisplayName("Payment Method")</th>
+            <th>@Html.DisplayName("Card Number")</th>
+            <th>@Html.DisplayName("Expiry Date")</th>
+        </tr>
+        @foreach (var pm in Model.Wallets)
+        {
+            <tr>
+                <td>@Html.RadioButtonFor(m => m.ChosenId, pm.WalletId, new { style = "width: auto;", @checked = true }) @string.Format("{0} {1}", pm.Brand, pm.ExpiryDate) </td>
+                <td>@Html.DisplayFor(m => pm.CardHolderName)</td>
+                <td>@Html.DisplayFor(m => pm.Brand)</td>
+                <td>@Html.DisplayFor(m => pm.HiddenCardNumber)</td>
+                <td>@Html.DisplayFor(m => pm.ExpiryDate)</td>
+            </tr>
+        }
+        @if (!Model.CannotChooseOther)
+        {
+            <tr>
+                <td>
+                    @Html.RadioButtonFor(m => m.ChosenId, "", new { style = "width: auto;" }) Other
+                </td>
+            </tr>
+        }
+    </table>
+    <input type="submit" value="Choose"/>
+}

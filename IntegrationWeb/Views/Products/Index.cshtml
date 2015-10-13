@@ -1,0 +1,81 @@
+﻿@model IntegrationWeb.Models.ProductsViewModel
+
+@{
+    ViewBag.Title = "Products";
+}
+@section scripts
+{
+    <section class="scripts">
+        <script type="text/javascript">
+            $(function () {
+                $(".AddToCart").click(function () {
+                    var productId = $(this).attr("data-id");
+                    if (productId != '') {
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("Add")",
+                            data: { id: productId }
+                        })
+                            .done(
+                            function (data) {
+                                if (data.ok) {
+                                    $('.itemcount').text(data.itemcount);
+                                    $('.totalcart').text(data.totalcart);
+                                }
+                            }
+                        );
+                    }
+                    });
+                    $(".RemoveFromCart").click(function () {
+                        var productId = $(this).attr("data-id");
+                        if (productId != '') {
+                            $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("Remove")",
+                            data: { id: productId }
+                        })
+                            .done(
+                            function (data) {
+                                if (data.ok) {
+                                    $('.itemcount').text(data.itemcount);
+                                    $('.totalcart').text(data.totalcart);
+                                }
+                            }
+                        );
+                        }
+                    });
+            });
+        </script>
+    </section>
+}
+@section featured
+{
+    <section class="featured">
+        @if (Request.IsAuthenticated)
+        {
+            @Html.Partial("_ShoppingCart", Model)
+        }
+    </section>
+}
+@using (Html.BeginForm())
+    {
+        <table>
+            <tr>
+                <th>@Html.DisplayName("Product")</th>
+                <th>@Html.DisplayName("Price")</th>
+                <th></th>
+            </tr>
+            @foreach (var product in Model.Products)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(m => product.Name)</td>
+                    <td style="text-align: right">@Html.DisplayFor(m => product.Price) €</td>
+                    @if (Request.IsAuthenticated)
+                    {
+                        <td><a href="#" class="AddToCart" data-id="@product.ProductId">Add</a>|
+                            <a href="#" class="RemoveFromCart" data-id="@product.ProductId">Remove</a></td>
+                    }
+                </tr>
+            }
+        </table>
+    }

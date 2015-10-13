@@ -1,0 +1,15 @@
+﻿@model DomainModel.Order
+
+@{
+    ViewBag.Title = "Success";
+}
+
+<h2>Your order has been processed successfuly.</h2>
+<table>
+    <tr>
+        <th>@Html.DisplayNameFor(m => m.OrderId)</th>
+        <th>@Html.DisplayNameFor(m => m.Amount)</th>
+    </tr>
+</table>
+Order ID: @Model.OrderId
+Amount: @Model.Amount €

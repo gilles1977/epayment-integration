@@ -1,0 +1,68 @@
+﻿@using DomainModel
+@{
+    var user = Session["user"] as DomainModel.User ?? new User();
+}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>@ViewBag.Title - Integration Project</title>
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width" />
+        
+        @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/jqueryui")
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/modernizr")
+        <style type="text/css">
+            .ui-menu { position: absolute; width: 150px; }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    <p class="site-title">@ViewBag.Title</p>
+                </div>
+                <div class="float-right">
+                    @if (Request.IsAuthenticated)
+                    {
+                        <text>
+                            <strong>Welcome, @Html.Encode(user.FullName)</strong>
+                            @Html.ActionLink("Log Off", "LogOff", "Account")
+                        </text>
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Log In", "Login", "Account")
+                    }
+                    <nav>
+                        <ul id="menu">
+                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li>@Html.ActionLink("Products", "Index", "Products")</li>
+                            @if (Request.IsAuthenticated && user.Role == "Admin")
+                            {
+                                <li>@Html.ActionLink("Orders", "Orders", "Admin")</li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <div id="body">
+            @RenderSection("featured", required: false)
+            <section class="content-wrapper main-content clear-fix">
+                @RenderBody()
+            </section>
+        </div>
+        <footer>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    <p>&copy; @DateTime.Now.Year - Ingenico</p>
+                </div>
+            </div>
+        </footer>
+        @RenderSection("scripts", required: false)
+    </body>
+</html>
